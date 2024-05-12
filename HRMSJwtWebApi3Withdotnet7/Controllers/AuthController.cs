@@ -122,5 +122,36 @@ namespace HRMSJwtWebApi3Withdotnet7.Controllers
 
             return token;
         }
+
+        // Route -> make user --> admin
+        [HttpPost]
+        [Route("make-admin")]
+        public async Task<IActionResult> MakeAdmin([FromBody] UpdatePermissionDto updatePermissionDto)
+        {
+            var user = await _userManager.FindByNameAsync(updatePermissionDto.Username);
+
+            if (user is null)
+                return BadRequest("Invalid Username or Username column are not filled!!!");
+
+            await _userManager.AddToRoleAsync(user, StaticUserRoles.ADMIN);
+
+            return Ok("User is now an Admin!!");
+        }
+
+
+        // Route -> make user --> owner
+        [HttpPost]
+        [Route("make-owner")]
+        public async Task<IActionResult> MakeOWNER([FromBody] UpdatePermissionDto updatePermissionDto)
+        {
+            var user = await _userManager.FindByNameAsync(updatePermissionDto.Username);
+
+            if (user is null)
+                return BadRequest("Invalid Username or Username column are not filled!!!");
+
+            await _userManager.AddToRoleAsync(user, StaticUserRoles.OWNER);
+
+            return Ok("User is now an Owner!!");
+        }
     }
 }
