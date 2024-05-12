@@ -1,4 +1,5 @@
 ﻿using HRMSJwtWebApi3Withdotnet7.Core.Dtos;
+using HRMSJwtWebApi3Withdotnet7.Core.Entities;
 using HRMSJwtWebApi3Withdotnet7.Core.OtherObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -14,11 +15,11 @@ namespace HRMSJwtWebApi3Withdotnet7.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
 
-        public AuthController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public AuthController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -54,8 +55,10 @@ namespace HRMSJwtWebApi3Withdotnet7.Controllers
             if (isExistUser != null)
                 return BadRequest("UserName Already Exist");
 
-            IdentityUser newUser = new IdentityUser()
+            ApplicationUser newUser = new ApplicationUser()
             {
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName,
                 Email = registerDto.Email,
                 UserName = registerDto.Username,
                 SecurityStamp = Guid.NewGuid().ToString(),
@@ -96,6 +99,8 @@ namespace HRMSJwtWebApi3Withdotnet7.Controllers
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim("JWTID", Guid.NewGuid().ToString()),
+                new Claim("FirstName", user.FirstName),
+                new Claim("LastName", user.LastName),
             };
             foreach(var userRole in userRoles)
             {
